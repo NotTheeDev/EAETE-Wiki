@@ -1,0 +1,7 @@
+.code-line.inserted {
+    color: #92ac4b;
+}
+
+.updatelog-text {
+    overflow-x: scroll;
+}

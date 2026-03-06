@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <link href="style.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
+    <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
+
     <title>Temelín - Wiki</title>
 </head>
 <body>
@@ -25,40 +27,63 @@
             <img class="h-96 w-full object-cover" src="images/background.jpg">
         </div>
         <div class="p-4 grid grid-cols-3">
-            <div class="col-span-2">
-                Welcome to temelín, go fuck your self
+            <div class="col-span-2 mainpage">
+                Welcome to temelín :3
             </div>
             <div>
-                <div class="collapse collapse-arrow bg-base-100 border border-base-300">
+                <p class="text-2xl text-bold p-4">Update log</p>
+                <div id="original-updatelog" class="collapse collapse-arrow bg-base-100 border border-base-300">
                     <input type="radio" name="my-accordion-2" checked="checked" />
-                    <div class="collapse-title font-semibold">VERSION 0.3.0</div>
-                    <pre class="collapse-content text-sm">
-+ Translated most of the valves (if missing report them)
-+ Fixed LSd + LSc stucked after activating
-+ Added jump delay between jumps
-+ Added UT system for pneumaticly operated valves in PC
-+ Added isolation valves for SG continuous and sludge blowdown
-+ Added continous blowdown for SG
-	> Technicly should prevent high water levels during start-up
-+ Added TG systém (spent fuel pools)
-	> Preaty much just fun to watch, but without circulation small amount of heat is 
-		generated ;)
-+ Valves with regulation, show setpoint and actual position
-+ AZR added for TK pumps
-	> AZR - Automaticky switch between pumps when working pump switches off
-+ Fixed reverse power protection actuating as soon as turbine trips
-+ Reworked signal system backend (May cause few bugs)</pre>
+                    <div class="collapse-title font-semibold updatelog-version"><p>VERSION 1</p></div>
+                    <div class="collapse-content text-sm updatelog-text"><p>KOKOT</p></div>
                 </div>
-                <div class="collapse collapse-arrow bg-base-100 border border-base-300">
-                    <input type="radio" name="my-accordion-2" />
-                    <div class="collapse-title font-semibold">I forgot my password. What should I do?</div>
-                    <div class="collapse-content text-sm">Click on "Forgot Password" on the login page and follow the instructions sent to your email.</div>
-                </div>
-                <div class="collapse collapse-arrow bg-base-100 border border-base-300">
-                    <input type="radio" name="my-accordion-2" />
-                    <div class="collapse-title font-semibold">How do I update my profile information?</div>
-                    <div class="collapse-content text-sm">Go to "My Account" settings and select "Edit Profile" to make changes.</div>
-                </div>
+                <script type="text/javascript" defer>
+                    async function loadUpdatelog() {
+                        const originalUpdatelog = document.getElementById("original-updatelog");
+
+                        try {
+                            const response = await fetch("data/updatelog.md");
+                            const text = await response?.text();
+                            
+                            text.split("<UPDATE").forEach((value, i) => {
+                                if (i == 0) {
+                                    return;
+                                }
+
+                                const tagEnd = value.indexOf(">");
+                                const version = value.slice(value.indexOf('"') + 1, tagEnd - 1);
+                                
+                                const updatelogText = value.slice(tagEnd + 3, value.length - 1);
+
+                                const div = originalUpdatelog.cloneNode(true);
+                                const versionDiv = div?.getElementsByClassName("updatelog-version")[0];
+                                const textDiv = div?.getElementsByClassName("updatelog-text")[0];
+                                
+                                if (i == 1) {
+                                    div.childNodes[1].checked = true
+                                }
+
+                                div.id = null;
+                                versionDiv.innerHTML = `V${version}`;
+                                textDiv.innerHTML = markdown.default(`\`\`\`diff\n${updatelogText}\`\`\``);
+
+                                originalUpdatelog.parentElement.appendChild(div);
+                            })
+
+                            originalUpdatelog.remove();
+                        } catch(e) {
+                            console.error("Failed to read change log!", e);
+                        }
+                    }
+
+                    loadUpdatelog();
+
+                    /*const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
+                    const div = document.createElement('div');
+                    div.className = 'markdown-body';
+                    div.innerHTML = 
+                    document.body.appendChild(div)*/
+                </script>
             </div>
         </div>
     </div>
