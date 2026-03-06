@@ -59,9 +59,7 @@
                                 const versionDiv = div?.getElementsByClassName("updatelog-version")[0];
                                 const textDiv = div?.getElementsByClassName("updatelog-text")[0];
                                 
-                                if (i == 1) {
-                                    div.childNodes[1].checked = true
-                                }
+                                div.childNodes[1].checked = i == 1
 
                                 div.id = null;
                                 versionDiv.innerHTML = `V${version}`;
